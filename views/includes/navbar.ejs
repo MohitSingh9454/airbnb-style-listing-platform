@@ -1,0 +1,127 @@
+ <!-- <nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/"><i class="fa-solid fa-compass"></i></a>
+    <button 
+    class="navbar-toggler"
+     type="button" 
+     data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link" href="/listings">All Listings</a>
+        <a class="nav-link" href="/listings/new">Add new Listing</a>
+      </div>
+    </div>
+  </div>
+</nav> 
+
+ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+  .btn-search {
+    background-color: #fe424d;
+    color: #fff;
+    border-radius: 25px;
+    padding: 0 1rem;
+  }
+  .btn-search:hover {
+    background-color: #fe424d;
+    color: #fff;
+  }
+  .btn-search i {
+    margin-right: 0.5rem;
+  }
+  .search-inp {
+    border-radius: 25px;
+    padding: 0.5rem 3rem;
+    font-size: 1rem;
+  }
+</style>
+
+<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+    <!-- Left Side -->
+    <a class="navbar-brand" href="/"><i class="fa-solid fa-compass"></i></a>
+
+    <!-- Navbar Toggler for Mobile -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavAltMarkup"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <!-- Left Links -->
+      <div class="navbar-nav">
+        <a class="nav-link" href="/">Home</a>
+        <!-- <a class="nav-link" href="/listings">Explore</a> -->
+         <a class="nav-link" href="/listings">All Listings</a>
+        <a class="nav-link" href="/listings/new">Add new Listing</a>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="mx-auto">
+        <form class="d-flex" role="search" action="/listings/search" method="GET">
+          <input
+            class="form-control me-2 search-inp"
+            type="search"
+            name="q"
+            placeholder="Search destination"
+          />
+          <button class="btn btn-search" type="submit">
+            <i class="fa-solid fa-magnifying-glass"></i> Search
+          </button>
+        </form>
+      </div>
+
+      <!-- Right Links -->
+      <div class="navbar-nav ms-auto d-flex align-items-center gap-3">
+        <!-- <a class="nav-link fw-semibold" href="/listings">Home</a> -->
+
+        <% if (!currUser) { %>
+          <a class="nav-link fw-semibold" href="/signup">Sign up</a>
+          <a class="nav-link fw-semibold" href="/login">Log in</a>
+        <% } %>
+
+        <% if (currUser) { %>
+          <a class="nav-link fw-semibold" href="/logout">Log out</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav> 
