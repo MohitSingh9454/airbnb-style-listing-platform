@@ -1,96 +1,65 @@
 const Listing = require("../models/listing");
-const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
-const mapToken = process.env.MAP_TOKEN;
-const geocodingClient = mbxGeocoding({ accessToken: mapToken });
-// INDEX
+
 module.exports.index = async (req, res) => {
-    const allListing = await Listing.find({});
-    res.render("listings/index", { allListing });
+  const allListings = await Listing.find({});
+  res.render("listings/index", { allListings });
 };
 
-// NEW FORM
+module.exports.searchListings = async (req, res) => {
+  const { q } = req.query;
+  if (!q) return res.redirect("/listings");
+  const allListings = await Listing.find({
+    title: { $regex: q, $options: "i" },
+  });
+  res.render("listings/index", { allListings });
+};
+
 module.exports.renderNewForm = (req, res) => {
-    res.render("listings/new");
+  res.render("listings/new");
 };
 
-// CREATE
-module.exports.createListing = async (req, res, next) => {
-    try {
-        let response = await geocodingClient.forwardGeocode({
-            query: req.body.listing.location,
-            limit: 1,
-        })
-            .send();
-
-          
-
-
-        let url = req.file.path;
-        let filename = req.file.filename;
-        const listing = req.body.listing;
-        const newListing = new Listing(listing);
-        newListing.owner = req.user._id;
-        newListing.image = { url, filename };
-        newListing.geometry= response.body.features[0].geometry;
-        let saveListing= await newListing.save();
-        console.log(saveListing);
-
-        req.flash("success", "New Listing Created");
-        res.redirect("/listings");
-    } catch (err) {
-        next(err);
-    }
+module.exports.createListing = async (req, res) => {
+  const newListing = new Listing(req.body.listing);
+  newListing.owner = req.user._id;
+  await newListing.save();
+  req.flash("success", "New listing created successfully!");
+  res.redirect("/listings");
 };
 
-// SHOW
 module.exports.showListing = async (req, res) => {
-    const { id } = req.params;
-    const listing = await Listing.findById(id)
-        .populate({
-            path: "reviews",
-            populate: { path: "author" }
-        })
-        .populate("owner");
-    if (!listing) {
-        req.flash("error", "Listing you requested for does not exist!");
-        return res.redirect("/listings");
-    }
-    res.render("listings/show", { listing });
+  const { id } = req.params;
+  const listing = await Listing.findById(id).populate("owner");
+  if (!listing) {
+    req.flash("error", "Listing not found!");
+    return res.redirect("/listings");
+  }
+  res.render("listings/show", { listing });
 };
 
-// EDIT FORM
 module.exports.renderEditForm = async (req, res) => {
-    const { id } = req.params;
-    const listing = await Listing.findById(id);
-    if (!listing) {
-        req.flash("error", "Listing you requested for does not exist!");
-        return res.redirect("/listings");
-    }
-    let originalImageUrl = listing.image.url;
-    originalImageUrl = originalImageUrl.replace("/upload", "/upload/w_250");
-    res.render("listings/edit", { listing, originalImageUrl });
+  const { id } = req.params;
+  const listing = await Listing.findById(id);
+  if (!listing) {
+    req.flash("error", "Listing not found!");
+    return res.redirect("/listings");
+  }
+  res.render("listings/edit", { listing });
 };
 
-// UPDATE
 module.exports.updateListing = async (req, res) => {
-    const { id } = req.params;
-    let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-
-    if (typeof req.file !== "undefined") {
-
-        let url = req.file.path;
-        let filename = req.file.filename;
-        listing.image = { url, filename };
-        await listing.save();
-    }
-    req.flash("success", "Listing Updated");
-    res.redirect(`/listings/${id}`);
+  const { id } = req.params;
+  await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+  req.flash("success", "Listing updated successfully!");
+  res.redirect(`/listings/${id}`);
 };
 
-// DELETE
 module.exports.destroyListing = async (req, res) => {
-    const { id } = req.params;
-    await Listing.findByIdAndDelete(id);
-    req.flash("success", "Listing Deleted");
-    res.redirect("/listings");
+  const { id } = req.params;
+  const deletedListing = await Listing.findByIdAndDelete(id);
+  if (!deletedListing) {
+    req.flash("error", "Listing not found!");
+    return res.redirect("/listings");
+  }
+  req.flash("success", "Listing deleted successfully!");
+  res.redirect("/listings");
 };
