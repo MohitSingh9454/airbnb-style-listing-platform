@@ -41,3 +41,5 @@ module.exports.logout = (req, res, next) => {
     res.redirect("/listings");
   });
 };
+
+

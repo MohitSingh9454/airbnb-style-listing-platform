@@ -12,3 +12,5 @@ module.exports.listingSchema = joi.object({
     })
     .required(),
 });
+
+
